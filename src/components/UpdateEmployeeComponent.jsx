@@ -25,11 +25,12 @@ class UpdateEmployeeComponent extends Component {
     componentDidMount() {
         EmployeesService.getEmployeeById(this.state.id).then((res) => {
             let employee = res.data;
+
             //if some field in red.data is null, then set it to empty string
             if(employee.firstName == null) employee.firstName = "";
             if(employee.lastName == null) employee.lastName = "";
             if(employee.emailId == null) employee.emailId = "";
-            
+
             this.setState({firstName: employee.firstName, lastName: employee.lastName, emailId: employee.emailId});
         }
         );
@@ -50,7 +51,11 @@ class UpdateEmployeeComponent extends Component {
         e.preventDefault();
         let employee = {firstName: this.state.firstName, lastName: this.state.lastName, emailId: this.state.emailId};
         console.log('employee ===> ', JSON.stringify(employee));
-        
+
+        EmployeesService.updateEmployee(employee, this.state.id).then((res) => {
+            this.props.navigate("/employees");
+        }
+        );
         // EmployeesService.createEmployee(employee).then((res) => {
         //     this.props.navigate("/employees");
         // }
@@ -88,7 +93,7 @@ class UpdateEmployeeComponent extends Component {
                                             value={this.state.emailId} onChange={this.changeEmailIdHandler} />
                                     </div>
                                
-                                    <button className="btn btn-primary" onClick={this.updateEmployee}>Add Employee</button>
+                                    <button className="btn btn-primary" onClick={this.updateEmployee}>Update Employee</button>
                                     <button className="btn btn-danger" onClick={this.cancel.bind(this)} style={{marginLeft:"10px"}}>Cancel</button>
                                     
 
