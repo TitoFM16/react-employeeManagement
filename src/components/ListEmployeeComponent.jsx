@@ -19,7 +19,7 @@ class ListEmployeeComponent extends Component {
     }
     
     editEmployee(id) {
-        this.props.navigate(`/update-employee/${id}`);
+        this.props.navigate(`/add-employee/${id}`);
     }
     componentDidMount() {
         EmployeesService.getEmployees().then((res) => {
@@ -28,7 +28,7 @@ class ListEmployeeComponent extends Component {
     }
     addEmployee() {
               
-        this.props.navigate("/add-employee");
+        this.props.navigate("/add-employee/_add");
     }
     render() {
         
