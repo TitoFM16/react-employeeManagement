@@ -1,12 +1,17 @@
+// import { version } from "react-dom";
+
 import React, {Component} from "react";
 import EmployeesService from "../services/EmployeesService";
 import WithNavigateService  from "../services/WithNavigateService";
+import WithRouterService from "../services/WithRouterService";
 
-class CreateEmployeeComponent extends Component {
+class UpdateEmployeeComponent extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
+            // this.props.match.params.id does not work because react version is v6, so insted i use:
+            id: this.props.params.id,
             firstName: "",
             lastName: "",
             emailId: ""
@@ -14,8 +19,22 @@ class CreateEmployeeComponent extends Component {
         this.changeFirstNameHandler = this.changeFirstNameHandler.bind(this);
         this.changeLastNameHandler = this.changeLastNameHandler.bind(this);
         this.changeEmailIdHandler = this.changeEmailIdHandler.bind(this);
-        this.saveEmployee = this.saveEmployee.bind(this);
+        this.updateEmployee = this.updateEmployee.bind(this);
     }
+
+    componentDidMount() {
+        EmployeesService.getEmployeeById(this.state.id).then((res) => {
+            let employee = res.data;
+            //if some field in red.data is null, then set it to empty string
+            if(employee.firstName == null) employee.firstName = "";
+            if(employee.lastName == null) employee.lastName = "";
+            if(employee.emailId == null) employee.emailId = "";
+            
+            this.setState({firstName: employee.firstName, lastName: employee.lastName, emailId: employee.emailId});
+        }
+        );
+    }
+
 
     changeFirstNameHandler = (event) => {
         this.setState({firstName: event.target.value});
@@ -26,21 +45,18 @@ class CreateEmployeeComponent extends Component {
     changeEmailIdHandler = (event) => {
         this.setState({emailId: event.target.value});
     }
-    saveEmployee = (e) => {
+
+    updateEmployee = (e) => {
         e.preventDefault();
         let employee = {firstName: this.state.firstName, lastName: this.state.lastName, emailId: this.state.emailId};
         console.log('employee ===> ', JSON.stringify(employee));
-        EmployeesService.createEmployee(employee).then((res) => {
-            console.log('res ===> ', res);
-            this.props.navigate("/employees");
-        }
-        );
-    
-
-        // EmployeesService.saveEmployee(this.state).then((res) => {
-        //     this.props.navigate("/list-employee");
+        
+        // EmployeesService.createEmployee(employee).then((res) => {
+        //     this.props.navigate("/employees");
         // }
         // );
+    
+
     }
 
     cancel(){
@@ -53,7 +69,7 @@ class CreateEmployeeComponent extends Component {
                 <div className="container">
                     <div className="row">
                         <div className="card col-md-6 offset-md-3">
-                            <h3 className="text-center">Add Employee</h3>
+                            <h3 className="text-center">Update Employee</h3>
                             <div className="card-body">
                                 <form>
                                     <div className="form-group">
@@ -72,7 +88,7 @@ class CreateEmployeeComponent extends Component {
                                             value={this.state.emailId} onChange={this.changeEmailIdHandler} />
                                     </div>
                                
-                                    <button className="btn btn-primary" onClick={this.saveEmployee}>Add Employee</button>
+                                    <button className="btn btn-primary" onClick={this.updateEmployee}>Add Employee</button>
                                     <button className="btn btn-danger" onClick={this.cancel.bind(this)} style={{marginLeft:"10px"}}>Cancel</button>
                                     
 
@@ -86,4 +102,4 @@ class CreateEmployeeComponent extends Component {
     }
 }
 
-export default WithNavigateService(CreateEmployeeComponent);
+export default WithRouterService(WithNavigateService(UpdateEmployeeComponent));
